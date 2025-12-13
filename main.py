@@ -31,7 +31,10 @@ def create_image_dir() -> None:
 def append_metadata_to_csv(metadata: dict[str, str]) -> None:
 	filename: str = metadata.get('filename', '').replace('png', 'jpg')
 	title: str = metadata.get('title', '')
-	keywords: str = '"' + metadata.get('keywords', '') + '"'
+	raw_keywords: str = metadata.get('keywords', '')
+	keywords_list: list[str] = raw_keywords.split(',')
+
+	keywords: str = '"' + ','.join(kw.strip() for kw in keywords_list) + '"'
 	category: str = metadata.get('category', '')
 	row: str = f'{filename},{title},{keywords},{category},\n'
 

@@ -7,11 +7,12 @@ import os
 import json
 from datetime import datetime
 
-N: int = 10
+N: int = 10 # per niche
 META_PROMPTS_DIR: str = 'meta_prompts'
-ADOBE_CSV: str = 'metadata_2.csv'
-LOG_DIR: str = 'log2'
-IMAGES_DIR: str = 'images2'
+ADOBE_CSV: str = 'metadata.csv'
+LOG_DIR: str = 'log'
+IMAGE_MODEL: str = 'gemini-2.5-flash-image-preview'
+IMAGES_DIR: str = 'images'
 AR: str = '16:9'
 RESOLUTION: str = '1K'
 
@@ -116,7 +117,7 @@ def main():
 
 				# generate the image
 				image_response: GenerateContentResponse = client.models.generate_content(
-					model='gemini-2.5-flash-image-preview',
+					model=IMAGE_MODEL,
 					contents=[image_prompt],
 					config=GenerateContentConfig(
 						image_config=ImageConfig(
@@ -134,7 +135,6 @@ def main():
 					if image is not None:
 						image.save(f'{IMAGES_DIR}/{image_filename}')
 						log_prompt_and_metadata(niche_name, image_prompt, metadata)
-
 
 if __name__ == "__main__":
 	main()

@@ -29,7 +29,7 @@ def create_image_dir() -> None:
 		os.makedirs(IMAGES_DIR)
 
 def append_metadata_to_csv(metadata: dict[str, str]) -> None:
-	filename: str = metadata.get('filename', '')
+	filename: str = metadata.get('filename', '').replace('png', 'jpg')
 	title: str = metadata.get('title', '')
 	keywords: str = metadata.get('keywords', '')
 	category: str = metadata.get('category', '')

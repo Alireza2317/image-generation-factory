@@ -31,7 +31,7 @@ def create_image_dir() -> None:
 def append_metadata_to_csv(metadata: dict[str, str]) -> None:
 	filename: str = metadata.get('filename', '').replace('png', 'jpg')
 	title: str = metadata.get('title', '')
-	keywords: str = metadata.get('keywords', '')
+	keywords: str = '"' + metadata.get('keywords', '') + '"'
 	category: str = metadata.get('category', '')
 	row: str = f'{filename},{title},{keywords},{category},\n'
 
@@ -66,7 +66,6 @@ def log_prompt_and_metadata(
 	filename: str = metadata.get('filename', '')
 	title: str = metadata.get('title', '')
 	keywords: str = metadata.get('keywords', '')
-	keywords = f"({keywords.replace(',', ' ')})"
 
 	row = f'{filename},{title},{keywords},{image_prompt}\n'
 	with open(log_filepath, mode='a') as file:

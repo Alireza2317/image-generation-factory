@@ -3,3 +3,4 @@ log*/
 *.csv
 meta_prompts/
 **/__pycache__/
+.env

@@ -2,3 +2,4 @@ images*/
 log*/
 *.csv
 meta_prompts/
+**/__pycache__/

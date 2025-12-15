@@ -2,12 +2,13 @@ import json
 import requests
 from base_brain import Brain
 
-#URL = 'http://127.0.0.1:11434/api/generate'
-#MODEL = 'llama3.2'
-
 
 class OllamaBrain(Brain):
-	def __init__(self, model: str, url: str) -> None:
+	def __init__(
+		self,
+		model: str = 'llama3.2',
+		url: str = 'http://127.0.0.1:11434/api/generate'
+	) -> None:
 		self.model = model
 		self.url = url
 
@@ -32,7 +33,7 @@ class OllamaBrain(Brain):
 			if self.validate_json(content):
 				return content
 
-			print('❌ JSON missing required keys!')
+			print('❌OLLAMA: JSON missing required keys!')
 
 		except requests.exceptions.RequestException as e:
 			print(f'OLLAMA: requests error: {e}')

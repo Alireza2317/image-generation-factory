@@ -3,7 +3,7 @@ from google import genai
 from google.genai.types import (
 	GenerateContentResponse, GenerateContentConfig, ThinkingConfig
 )
-from base_brain import Brain
+from brains.base_brain import Brain
 
 
 class GeminiBrain(Brain):

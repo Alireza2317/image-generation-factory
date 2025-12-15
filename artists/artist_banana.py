@@ -1,5 +1,5 @@
 from pathlib import Path
-from base_artist import Artist
+from artists.base_artist import Artist
 from google import genai
 from google.genai.types import (
 	GenerateContentResponse, GenerateContentConfig, ImageConfig

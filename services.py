@@ -52,7 +52,7 @@ class ServerRunner:
 		for _ in range(retries):
 			try:
 				requests.get(url, timeout=1)
-				print(f'✅ {name} is Ready!')
+				print(f'✅ {name} is Ready!\t\t\t')
 				return True
 
 			except requests.ConnectionError:

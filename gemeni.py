@@ -7,12 +7,12 @@ import os
 import json
 from datetime import datetime
 
-N: int = 10 # per niche
+N: int = 20 # per niche
 META_PROMPTS_DIR: str = 'meta_prompts'
 ADOBE_CSV: str = 'metadata.csv'
 LOG_DIR: str = 'log'
 IMAGE_MODEL: str = 'gemini-2.5-flash-image-preview'
-IMAGES_DIR: str = 'images'
+IMAGES_DIR: str = 'images2'
 AR: str = '16:9'
 RESOLUTION: str = '1K'
 

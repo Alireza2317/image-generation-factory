@@ -1,1 +1,5 @@
-[] for logs, remove all commas, or use a different delimiter
+CONFIGS:
+[] use dataclasses instead of plain dict
+
+LOGS:
+[] remove all commas, or use a different delimiter

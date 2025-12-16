@@ -39,7 +39,7 @@ class BananaArtist(Artist):
         for part in image_response.parts:
             image = part.as_image()
             if image is not None:
-                output_dir: Path = self.config.get("output_dir")
+                output_dir: Path = paint_cfg.get("output_dir", Path("."))
                 output_image_path: Path = output_dir / image_name
                 image.save(str(output_image_path.resolve()))
                 break

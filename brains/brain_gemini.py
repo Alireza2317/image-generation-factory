@@ -1,4 +1,5 @@
 import json
+from typing import Any
 from google import genai
 from google.genai.types import (
 	GenerateContentResponse,
@@ -6,6 +7,8 @@ from google.genai.types import (
 	ThinkingConfig,
 )
 from brains.base_brain import Brain
+from core.models import ImageIdea
+from core.mappers import IdeaMapper
 
 
 class GeminiBrain(Brain):
@@ -13,7 +16,7 @@ class GeminiBrain(Brain):
 		self.model = model
 		self.client = genai.Client()
 
-	def get_response(self, meta_prompt: str) -> dict[str, str] | None:
+	def get_response(self, meta_prompt: str) -> ImageIdea | None:
 		try:
 			response: GenerateContentResponse | None = (
 				self.client.models.generate_content(
@@ -26,6 +29,10 @@ class GeminiBrain(Brain):
 			)
 		except Exception as e:
 			print(f"Gemini Error: {e}")
+			return None
+
+		if response is None:
+			print("Gemini Error: No response!")
 			return None
 
 		if response.parts is None:
@@ -46,10 +53,14 @@ class GeminiBrain(Brain):
 		# with ```json, we should clean it up first
 		clean_json_s: str = json_str.removeprefix("```json").removesuffix("```")
 
-		content: dict[str, str] = json.loads(clean_json_s)
+		content: dict[str, Any] = json.loads(clean_json_s)
 
 		if self.validate_json(content):
-			return content
+			try:
+				return IdeaMapper.from_llm_json(content)
+			except Exception as e:
+				print(f"Error while mapping the json output to ImageIdea!\n{e}")
+				return None
 
 		print("Gemini Error: JSON missing required keys!")
 		return None

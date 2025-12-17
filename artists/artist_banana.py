@@ -14,7 +14,9 @@ class BananaArtist(Artist):
 		super().__init__(config)
 		self.client = genai.Client()
 
-	def paint(self, prompt: str, image_name: str, paint_cfg: dict[str, Any]) -> bool:
+	def paint(
+		self, prompt: str, image_name_stem: str, paint_cfg: dict[str, Any]
+	) -> bool:
 		try:
 			# generate the image
 			model: str = self.config.get("model", "")
@@ -43,7 +45,7 @@ class BananaArtist(Artist):
 			image = part.as_image()
 			if image is not None:
 				output_dir: Path = paint_cfg.get("output_dir", Path("."))
-				output_image_path: Path = output_dir / image_name
+				output_image_path: Path = output_dir / image_name_stem / ".png"
 				image.save(str(output_image_path.resolve()))
 				break
 		else:

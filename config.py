@@ -11,21 +11,21 @@ ACTIVE_ARTIST = "banana"  # 'banana' or 'fooocus'
 
 # --- SPECIFIC CONFIGS ---
 FOOOCUS_CONFIG: dict[str, Any] = {
-    "url": os.getenv("FOOOCUS_URL", "http://127.0.0.1:8888"),
-    "fooocus_path": Path(os.getenv("FOOOCUS_API_PATH")),
-    "checkpoint": "juggernautXL_v8Rundiffusion.safetensors",
+	"url": os.getenv("FOOOCUS_URL", "http://127.0.0.1:8888"),
+	"fooocus_path": Path(os.getenv("FOOOCUS_API_PATH")),
+	"checkpoint": "juggernautXL_v8Rundiffusion.safetensors",
 }
 
 BANANA_CONFIG: dict[str, Any] = {
-    "api_key": os.getenv("GEMINI_API_KEY"),
-    "gpu_type": "A100",
-    "timeout": 300,
-    "model": "gemini-2.5-flash-image-preview",
+	"api_key": os.getenv("GEMINI_API_KEY"),
+	"gpu_type": "A100",
+	"timeout": 300,
+	"model": "gemini-2.5-flash-image-preview",
 }
 
 PAINT_CONFIG: dict[str, Any] = {
-    "aspect_ratio": "1344x720",
-    "styles": ["Fooocus V2", "Fooocus Enhance"],
-    "negative_prompt": "low quality, ugly, deformed, watermark, signiture, logo",
-    "guidance_scale": 4.0,
+	"aspect_ratio": "1344x720",
+	"styles": ["Fooocus V2", "Fooocus Enhance"],
+	"negative_prompt": "low quality, ugly, deformed, watermark, signiture, logo",
+	"guidance_scale": 4.0,
 }

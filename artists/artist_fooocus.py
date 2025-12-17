@@ -9,7 +9,7 @@ def get_real_images_paths(
 	api_response: list[dict[str, Any]], fooocus_root_path: Path
 ) -> list[Path]:
 	"""
-	    Parses the API response to find where the file was saved on disk.
+	Parses the API response to find where the file was saved on disk.
 	Requires the root path of the Fooocus installation.
 	"""
 	paths: list[Path] = []
@@ -34,11 +34,11 @@ def move_rename_images(
 	real_paths: list[Path], base_image_name: str, output_dir: Path | None = None
 ) -> None:
 	"""
-	    Moves images to the final destination folder and renames them.
+	Moves images to the final destination folder and renames them.
 	output_dir: The folder to put the final images
 	"""
 	if not output_dir:
-		output_dir = real_paths[0].parent  # using the same directory
+		output_dir = real_paths[0].parent  # using the same fooocus directory
 
 	# ensure path existance
 	output_dir.mkdir(parents=True, exist_ok=True)
@@ -55,25 +55,22 @@ def move_rename_images(
 
 
 class FooocusArtist(Artist):
-	def paint(self, prompt: str, image_name: str, paint_cfg: dict[str, Any]) -> bool:
-		"""
-		image_name: Desired filename WITHOUT extension.
-		paint_cfg: Per-image settings (aspect_ratio, style, etc.)
-		"""
+	def paint(
+		self, prompt: str, image_name_stem: str, paint_cfg: dict[str, Any]
+	) -> bool:
 		base_url: str = self.config.get("url", "http://127.0.0.1:8888")
 		url: str = base_url.rstrip("/") + "/v1/generation/text-to-image"
 
 		seed: int = paint_cfg.get("seed", -1)
-		n_images: int = 1
+		n_images: int = paint_cfg.get("N_images", 1)
 		base_model: str = paint_cfg.get(
 			"checkpoint", "juggernautXL_v8Rundiffusion.safetensors"
 		)
 		performance: str = paint_cfg.get("performance", "Extreme Speed")
 		ar: str = paint_cfg.get("aspect_ratio", "1344*768")
 
-		styles = [
-			"Fooocus V2",
-		]
+		styles: list[str] = paint_cfg.get("styles", ["Fooocus V2"])
+
 		sdxl_offset_lora: dict[str, Any] = {
 			"enabled": True,
 			"model_name": "sd_xl_offset_example-lora_1.0.safetensors",
@@ -85,7 +82,6 @@ class FooocusArtist(Artist):
 			"require_base64": False,
 			"async_process": False,
 			"sharpness": 2,
-			"guidance_scale": 4,
 			"image_number": n_images,
 			"refiner_model_name": "None",
 			"refiner_swith": 0.5,
@@ -104,6 +100,7 @@ class FooocusArtist(Artist):
 			"loras": [
 				sdxl_offset_lora,
 			],
+			"guidance_scale": paint_cfg.get("guidance_scale", 4),
 		}
 		payload.update(basic_payload_params)
 
@@ -127,7 +124,7 @@ class FooocusArtist(Artist):
 
 			# move and rename images to the desired location and name
 			# use default dir
-			move_rename_images(real_images_paths, image_name)
+			move_rename_images(real_images_paths, image_name_stem)
 
 			return True
 

@@ -45,6 +45,7 @@ class BananaArtist(Artist):
 			image = part.as_image()
 			if image is not None:
 				output_dir: Path = paint_cfg.get("output_dir", Path("."))
+				output_dir.mkdir(parents=True, exist_ok=True)
 				output_image_path: Path = output_dir / f"{image_name_stem}.png"
 				image.save(str(output_image_path.resolve()))
 				break

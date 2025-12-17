@@ -8,6 +8,8 @@ load_dotenv()
 # --- GENERAL ---
 ACTIVE_BRAIN = "gemini"  # 'gemini' or 'ollama'
 ACTIVE_ARTIST = "banana"  # 'banana' or 'fooocus'
+CSV_PATH = os.getenv("CSV_PATH", ".")
+
 
 # --- SPECIFIC CONFIGS ---
 OLLAMA_CONFIG: dict[str, Any] = {

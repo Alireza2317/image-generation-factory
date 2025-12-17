@@ -1,7 +1,7 @@
 [project]
-name = "gemini"
+name = "image-generation-factory"
 version = "0.1.0"
-description = "Add your description here"
+description = "Batch image generation using llms and a image generation AI."
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [

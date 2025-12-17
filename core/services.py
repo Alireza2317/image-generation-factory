@@ -13,7 +13,10 @@ FOOOCUS_URL = os.getenv("FOOOCUS_URL", "http://127.0.0.1:8888/docs")
 
 
 class ServerRunner:
-	def __init__(self):
+	def __init__(self, run_ollama: bool, run_fooocus: bool):
+		self.run_ollama = run_ollama
+		self.run_fooocus = run_fooocus
+
 		raw_fooocus_path: str = os.getenv("FOOOCUS_API_PATH", "")
 		if not raw_fooocus_path:
 			raise ValueError(
@@ -66,58 +69,60 @@ class ServerRunner:
 	def __enter__(self) -> None:
 		print("🚀 Checking AI Infrastructure...")
 
-		# --- 1. OLLAMA LOGIC ---
-		if self._is_service_running("Ollama", OLLAMA_URL):
-			self.owns_ollama = False
-		else:
-			print("Starting Ollama (CPU Mode)...")
-			# Apply the CPU-Only fix
-			ollama_env = os.environ.copy()
-			ollama_env["CUDA_VISIBLE_DEVICES"] = ""
+		if self.run_ollama:
+			# --- 1. OLLAMA LOGIC ---
+			if self._is_service_running("Ollama", OLLAMA_URL):
+				self.owns_ollama = False
+			else:
+				print("Starting Ollama (CPU Mode)...")
+				# Apply the CPU-Only fix
+				ollama_env = os.environ.copy()
+				ollama_env["CUDA_VISIBLE_DEVICES"] = ""
 
-			try:
-				self.proc_ollama = subprocess.Popen(
-					["ollama", "serve"],
-					env=ollama_env,
+				try:
+					self.proc_ollama = subprocess.Popen(
+						["ollama", "serve"],
+						env=ollama_env,
+						stdout=subprocess.DEVNULL,
+						stderr=subprocess.PIPE,
+					)
+
+					self.owns_ollama = True
+
+					# Wait for it to actually start
+					if not self._wait_for_service("Ollama", OLLAMA_URL):
+						sys.exit(1)
+				except FileNotFoundError:
+					print("❌ Error: Ollama not installed.")
+					sys.exit(1)
+
+		if self.run_fooocus:
+			# --- 2. FOOOCUS LOGIC ---
+			if self._is_service_running("Fooocus-API", FOOOCUS_URL):
+				self.owns_fooocus = False
+			else:
+				print("Starting Fooocus-API...")
+				if not os.path.exists(self.venv_python):
+					print(f"❌ Error: Python not found at {self.venv_python}")
+					# If we started Ollama, kill it before exiting
+					if self.proc_ollama and self.owns_ollama:
+						self.proc_ollama.terminate()
+					sys.exit(1)
+
+				self.proc_fooocus = subprocess.Popen(
+					[self.venv_python, "main.py"],
+					cwd=self.fooocus_dir,
 					stdout=subprocess.DEVNULL,
 					stderr=subprocess.PIPE,
+					shell=False,
 				)
+				self.owns_fooocus = True
 
-				self.owns_ollama = True
-
-				# Wait for it to actually start
-				if not self._wait_for_service("Ollama", OLLAMA_URL):
+				if not self._wait_for_service("Fooocus", FOOOCUS_URL):
+					# Cleanup if Fooocus fails
+					if self.proc_ollama and self.owns_ollama:
+						self.proc_ollama.terminate()
 					sys.exit(1)
-			except FileNotFoundError:
-				print("❌ Error: Ollama not installed.")
-				sys.exit(1)
-
-		# --- 2. FOOOCUS LOGIC ---
-		if self._is_service_running("Fooocus-API", FOOOCUS_URL):
-			self.owns_fooocus = False
-		else:
-			print("Starting Fooocus-API...")
-			if not os.path.exists(self.venv_python):
-				print(f"❌ Error: Python not found at {self.venv_python}")
-				# If we started Ollama, kill it before exiting
-				if self.proc_ollama and self.owns_ollama:
-					self.proc_ollama.terminate()
-				sys.exit(1)
-
-			self.proc_fooocus = subprocess.Popen(
-				[self.venv_python, "main.py"],
-				cwd=self.fooocus_dir,
-				stdout=subprocess.DEVNULL,
-				stderr=subprocess.PIPE,
-				shell=False,
-			)
-			self.owns_fooocus = True
-
-			if not self._wait_for_service("Fooocus", FOOOCUS_URL):
-				# Cleanup if Fooocus fails
-				if self.proc_ollama and self.owns_ollama:
-					self.proc_ollama.terminate()
-				sys.exit(1)
 
 	def __exit__(self, exc_type, exc_val, exc_tb):
 		print("\n🧹 Finalizing...")

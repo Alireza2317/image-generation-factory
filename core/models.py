@@ -12,4 +12,4 @@ class ImageIdea:
 	title: str
 	keywords: str  # comma-seperated keywords like "kw1,kw2,kw3"
 	category: int
-	filename_stem: str
+	filename_stem: str = ""

@@ -20,7 +20,7 @@ class BananaArtist(Artist):
 		try:
 			# generate the image
 			model: str = self.config.get("model", "")
-			ar: str = paint_cfg.get("aspect_ratio", "1024x1024")
+			ar: str = paint_cfg.get("aspect_ratio", "16:9")
 			image_response: GenerateContentResponse = (
 				self.client.models.generate_content(
 					model=model,
@@ -45,7 +45,7 @@ class BananaArtist(Artist):
 			image = part.as_image()
 			if image is not None:
 				output_dir: Path = paint_cfg.get("output_dir", Path("."))
-				output_image_path: Path = output_dir / image_name_stem / ".png"
+				output_image_path: Path = output_dir / f"{image_name_stem}.png"
 				image.save(str(output_image_path.resolve()))
 				break
 		else:

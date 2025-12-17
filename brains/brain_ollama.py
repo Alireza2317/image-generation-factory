@@ -1,7 +1,7 @@
 import json
 from typing import Any
 import requests
-from base_brain import Brain
+from brains.base_brain import Brain
 from core.models import ImageIdea
 from core.mappers import IdeaMapper
 

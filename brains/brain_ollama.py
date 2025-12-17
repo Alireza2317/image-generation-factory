@@ -1,6 +1,9 @@
 import json
+from typing import Any
 import requests
 from base_brain import Brain
+from core.models import ImageIdea
+from core.mappers import IdeaMapper
 
 
 class OllamaBrain(Brain):
@@ -10,7 +13,7 @@ class OllamaBrain(Brain):
 		self.model = model
 		self.url = url
 
-	def get_response(self, meta_prompt: str) -> dict[str, str] | None:
+	def get_response(self, meta_prompt: str) -> ImageIdea | None:
 		payload = {
 			"model": self.model,
 			"prompt": meta_prompt,
@@ -24,10 +27,14 @@ class OllamaBrain(Brain):
 			response.raise_for_status()
 
 			raw_json = response.json().get("response")
-			content: dict[str, str] = json.loads(raw_json)
+			content: dict[str, Any] = json.loads(raw_json)
 
 			if self.validate_json(content):
-				return content
+				try:
+					return IdeaMapper.from_llm_json(content)
+				except Exception as e:
+					print(f"Error while mapping the json output to ImageIdea!\n{e}")
+					return None
 
 			print("❌OLLAMA: JSON missing required keys!")
 

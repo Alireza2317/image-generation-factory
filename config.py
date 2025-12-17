@@ -8,7 +8,7 @@ load_dotenv()
 # --- GENERAL ---
 ACTIVE_BRAIN = "gemini"  # 'gemini' or 'ollama'
 ACTIVE_ARTIST = "banana"  # 'banana' or 'fooocus'
-CSV_PATH = os.getenv("CSV_PATH", ".")
+CSV_PATH = Path(os.getenv("CSV_PATH", "./metadata.csv"))
 
 
 # --- SPECIFIC CONFIGS ---
@@ -37,4 +37,5 @@ PAINT_CONFIG: dict[str, Any] = {
 	"styles": ["Fooocus V2"],
 	"negative_prompt": "low quality, ugly, deformed, watermark, signiture, logo",
 	"guidance_scale": 4,
+	"output_dir": Path("./images"),
 }

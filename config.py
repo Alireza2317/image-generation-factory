@@ -10,6 +10,12 @@ ACTIVE_BRAIN = "gemini"  # 'gemini' or 'ollama'
 ACTIVE_ARTIST = "banana"  # 'banana' or 'fooocus'
 
 # --- SPECIFIC CONFIGS ---
+OLLAMA_CONFIG: dict[str, Any] = {
+	"model": "llama3.2",
+	"url": os.getenv("OLLAMA_URL", "http://127.0.0.1:11434").rstrip("/")
+	+ "/api/generate",
+}
+
 FOOOCUS_CONFIG: dict[str, Any] = {
 	"url": os.getenv("FOOOCUS_URL", "http://127.0.0.1:8888"),
 	"fooocus_path": Path(os.getenv("FOOOCUS_API_PATH")),
@@ -24,8 +30,9 @@ BANANA_CONFIG: dict[str, Any] = {
 }
 
 PAINT_CONFIG: dict[str, Any] = {
-	"aspect_ratio": "1344x720",
-	"styles": ["Fooocus V2", "Fooocus Enhance"],
+	"aspect_ratio": "16:9",
+	"image_size": "1344x720",
+	"styles": ["Fooocus V2"],
 	"negative_prompt": "low quality, ugly, deformed, watermark, signiture, logo",
-	"guidance_scale": 4.0,
+	"guidance_scale": 4,
 }

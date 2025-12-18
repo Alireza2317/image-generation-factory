@@ -53,11 +53,11 @@ class ServerRunner:
 
 	def _wait_for_service(self, name: str, url: str, retries: int = 30) -> bool:
 		"""Waits for a newly started service to come online."""
-		print(f"Waiting for {name} to warm up...", end="\r")
+		print(f"Waiting for {name} to warm up... ", end="")
 		for _ in range(retries):
 			try:
 				requests.get(url, timeout=5)
-				print(f"✅ {name} is Ready!\t\t\t")
+				print(f"✅ {name} is Ready!")
 				return True
 
 			except requests.ConnectionError:

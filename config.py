@@ -9,7 +9,7 @@ load_dotenv()
 ACTIVE_BRAIN = "gemini"  # 'gemini' or 'ollama'
 ACTIVE_ARTIST = "banana"  # 'banana' or 'fooocus'
 CSV_PATH = Path(os.getenv("CSV_PATH", "./metadata.csv"))
-
+META_PROMPTS_PATH = Path(".") / "prompts" / "meta_prompts"
 
 # --- SPECIFIC CONFIGS ---
 OLLAMA_CONFIG: dict[str, Any] = {

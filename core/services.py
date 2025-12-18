@@ -17,19 +17,20 @@ class ServerRunner:
 		self.run_ollama = run_ollama
 		self.run_fooocus = run_fooocus
 
-		raw_fooocus_path: str = os.getenv("FOOOCUS_API_PATH", "")
-		if not raw_fooocus_path:
-			raise ValueError(
-				"Configuration Error: `FOOOCUS_API_PATH` is missing.\n"
-				+ "Create a .env file based on .env.example and set the path."
-			)
-		self.fooocus_dir: Path = Path(raw_fooocus_path).resolve()
+		if run_fooocus:
+			raw_fooocus_path: str = os.getenv("FOOOCUS_API_PATH", "")
+			if not raw_fooocus_path:
+				raise ValueError(
+					"Configuration Error: `FOOOCUS_API_PATH` is missing.\n"
+					+ "Create a .env file based on .env.example and set the path."
+				)
+			self.fooocus_dir: Path = Path(raw_fooocus_path).resolve()
 
-		# Detect OS for correct Python path inside venv
-		if os.name == "nt":
-			self.venv_python = self.fooocus_dir / "venv" / "Scripts" / "python.exe"
-		else:
-			self.venv_python = self.fooocus_dir / "venv" / "bin" / "python"
+			# Detect OS for correct Python path inside venv
+			if os.name == "nt":
+				self.venv_python = self.fooocus_dir / "venv" / "Scripts" / "python.exe"
+			else:
+				self.venv_python = self.fooocus_dir / "venv" / "bin" / "python"
 
 		# Process handles
 		self.proc_ollama: subprocess.Popen | None = None
@@ -125,30 +126,28 @@ class ServerRunner:
 					sys.exit(1)
 
 	def __exit__(self, exc_type, exc_val, exc_tb):
-		print("\n🧹 Finalizing...")
+		if self.run_fooocus:
+			# Only kill Fooocus if we started it
+			if self.owns_fooocus and self.proc_fooocus:
+				print("   🔻 Stopping Fooocus...", end=" ")
+				self.proc_fooocus.terminate()
+				try:
+					self.proc_fooocus.wait(timeout=5)
+				except subprocess.TimeoutExpired:
+					self.proc_fooocus.kill()
 
-		# Only kill Fooocus if we started it
-		if self.owns_fooocus and self.proc_fooocus:
-			print("   🔻 Stopping Fooocus...", end=" ")
-			self.proc_fooocus.terminate()
-			try:
-				self.proc_fooocus.wait(timeout=5)
-			except subprocess.TimeoutExpired:
-				self.proc_fooocus.kill()
-			print("Done.")
-		else:
-			print("Fooocus left running (External process).")
-
-		# Only kill Ollama if we started it
-		if self.owns_ollama and self.proc_ollama:
-			print("   🔻 Stopping Ollama...", end=" ")
-			self.proc_ollama.terminate()
-			try:
-				self.proc_ollama.wait(timeout=3)
-			except subprocess.TimeoutExpired:
-				self.proc_ollama.kill()
-			print("Done.")
-		else:
-			print("Ollama left running (External process).")
-
-		print("✅ Session Closed.")
+				print("✅ Fooocus Session Closed.")
+			else:
+				print("Fooocus left running (External process).")
+		if self.run_ollama:
+			# Only kill Ollama if we started it
+			if self.owns_ollama and self.proc_ollama:
+				print("   🔻 Stopping Ollama...", end=" ")
+				self.proc_ollama.terminate()
+				try:
+					self.proc_ollama.wait(timeout=3)
+				except subprocess.TimeoutExpired:
+					self.proc_ollama.kill()
+				print("✅ Ollama Session Closed.")
+			else:
+				print("Ollama left running (External process).")

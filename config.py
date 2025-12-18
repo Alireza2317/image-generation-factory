@@ -6,8 +6,8 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # --- GENERAL ---
-ACTIVE_BRAIN = "gemini"  # 'gemini' or 'ollama'
-ACTIVE_ARTIST = "banana"  # 'banana' or 'fooocus'
+ACTIVE_BRAIN = "ollama"  # 'gemini' or 'ollama'
+ACTIVE_ARTIST = "fooocus"  # 'banana' or 'fooocus'
 CSV_PATH = Path(os.getenv("CSV_PATH", "./metadata.csv"))
 META_PROMPTS_PATH = Path(".") / "prompts" / "meta_prompts"
 
@@ -33,7 +33,7 @@ BANANA_CONFIG: dict[str, Any] = {
 
 PAINT_CONFIG: dict[str, Any] = {
 	"aspect_ratio": "16:9",
-	"image_size": "1344x720",
+	"image_size": "1344*720",
 	"styles": ["Fooocus V2"],
 	"negative_prompt": "low quality, ugly, deformed, watermark, signiture, logo",
 	"guidance_scale": 4,

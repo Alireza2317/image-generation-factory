@@ -67,7 +67,7 @@ class FooocusArtist(Artist):
 			"checkpoint", "juggernautXL_v8Rundiffusion.safetensors"
 		)
 		performance: str = paint_cfg.get("performance", "Extreme Speed")
-		ar: str = paint_cfg.get("aspect_ratio", "1344*768")
+		ar: str = paint_cfg.get("image_size", "1344*768")
 
 		styles: list[str] = paint_cfg.get("styles", ["Fooocus V2"])
 

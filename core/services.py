@@ -56,7 +56,7 @@ class ServerRunner:
 		print(f"Waiting for {name} to warm up...", end="\r")
 		for _ in range(retries):
 			try:
-				requests.get(url, timeout=1)
+				requests.get(url, timeout=5)
 				print(f"✅ {name} is Ready!\t\t\t")
 				return True
 
@@ -145,7 +145,7 @@ class ServerRunner:
 				print("   🔻 Stopping Ollama...", end=" ")
 				self.proc_ollama.terminate()
 				try:
-					self.proc_ollama.wait(timeout=3)
+					self.proc_ollama.wait(timeout=5)
 				except subprocess.TimeoutExpired:
 					self.proc_ollama.kill()
 				print("✅ Ollama Session Closed.")

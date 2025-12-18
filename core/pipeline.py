@@ -54,5 +54,5 @@ class ProductionPipeline:
 			return False
 
 		print("✅ Metadata saved.")
-		print("✅ Finished cycle.")
+		print(f"✅ {'-' * 5} Finished cycle. {'-' * 5}\n")
 		return True

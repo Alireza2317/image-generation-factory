@@ -112,8 +112,6 @@ class FooocusArtist(Artist):
 		data = response.json()
 
 		if response.status_code == 200 and data:
-			print(f"Successful: {data}")
-
 			# get generated images paths from data
 			real_images_paths: list[Path] = get_real_images_paths(
 				data, self.config["path"]

@@ -1,14 +1,22 @@
 from datetime import datetime
-from settings import settings, ArtistType, BrainType
+from settings import settings, ArtistType, BrainType, PipelineType
+
 from brains.base_brain import Brain
 from artists.base_artist import Artist
+
 from brains.brain_ollama import OllamaBrain
 from brains.brain_gemini import GeminiBrain
 from artists.artist_fooocus import FooocusArtist
 from artists.artist_banana import BananaArtist
+
 from core.csv_manager import AdobeCsvManager
-from core.pipeline.meta import MetaPipeline, MetaJobConfig
+
 from core.services import ServerRunner
+
+from core.pipeline.base import BasePipeline
+from core.pipeline.meta import MetaPipeline, MetaJobConfig
+from core.pipeline.wildcard import WildcardPipeline, WildcardConfig
+
 from prompts.prompt_manager import MetaPromptManager
 
 
@@ -38,13 +46,25 @@ def get_workers() -> tuple[Brain, Artist]:
 	return brain, artist
 
 
+def get_pipeline(
+	brain: Brain, artist: Artist, csv_manager: AdobeCsvManager
+) -> BasePipeline:
+	if settings.active_pipeline == PipelineType.META:
+		return MetaPipeline(brain=brain, artist=artist, csv_manager=csv_manager)
+	elif settings.active_pipeline == PipelineType.WILDCARD:
+		return WildcardPipeline(brain=brain, artist=artist, csv_manager=csv_manager)
+	else:
+		print(f"Unknown pipeline {settings.active_pipeline}!")
+		exit(1)
+
+
 def main() -> None:
 	N_image_per_niche: int = 1
 	brain, artist = get_workers()
 
 	csv_manager = AdobeCsvManager(filepath=settings.csv_path)
 
-	pipeline = MetaPipeline(brain=brain, artist=artist, csv_manager=csv_manager)
+	pipeline = get_pipeline(brain=brain, artist=artist, csv_manager=csv_manager)
 
 	meta_prompt_manager = MetaPromptManager(settings.meta_prompts_path)
 

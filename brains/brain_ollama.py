@@ -8,8 +8,8 @@ from core.mappers import IdeaMapper
 
 class OllamaBrain(Brain):
 	def __init__(self, config: dict[str, Any]) -> None:
-		self.model = config.get("model")
-		self.url = config.get("url")
+		self.model = config["model"]
+		self.url = config["url"]
 
 	def get_response(self, meta_prompt: str) -> ImageIdea | None:
 		payload = {

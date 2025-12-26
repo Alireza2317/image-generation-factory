@@ -15,7 +15,10 @@ def get_real_images_paths(
 	paths: list[Path] = []
 
 	for entry in api_response:
-		url_parts: list[str] = entry.get("url").split("/")
+		if not entry.get("url"):
+			raise ValueError("Response did not contain `url` key!")
+
+		url_parts: list[str] = entry["url"].split("/")
 		ugly_image_name: str = url_parts[-1]
 		date_directory_name: str = url_parts[-2]
 
@@ -31,14 +34,12 @@ def get_real_images_paths(
 
 
 def move_rename_images(
-	real_paths: list[Path], base_image_name: str, output_dir: Path | None = None
+	real_paths: list[Path], base_image_name: str, output_dir: Path
 ) -> None:
 	"""
 	Moves images to the final destination folder and renames them.
 	output_dir: The folder to put the final images
 	"""
-	if not output_dir:
-		output_dir = real_paths[0].parent  # using the same fooocus directory
 
 	# ensure path existance
 	output_dir.mkdir(parents=True, exist_ok=True)
@@ -58,18 +59,16 @@ class FooocusArtist(Artist):
 	def paint(
 		self, prompt: str, image_name_stem: str, paint_cfg: dict[str, Any]
 	) -> bool:
-		base_url: str = self.config.get("url", "http://127.0.0.1:8888")
-		url: str = base_url.rstrip("/") + "/v1/generation/text-to-image"
+		base_url: str = self.config["url"].rstrip("/")
+		url: str = f"{base_url}/v1/generation/text-to-image"
 
-		seed: int = paint_cfg.get("seed", -1)
-		n_images: int = paint_cfg.get("N_images", 1)
-		base_model: str = paint_cfg.get(
-			"checkpoint", "juggernautXL_v8Rundiffusion.safetensors"
-		)
-		performance: str = paint_cfg.get("performance", "Extreme Speed")
-		ar: str = paint_cfg.get("image_size", "1344*768")
+		seed: int = paint_cfg["seed"]
+		n_images: int = paint_cfg["N_images"]
+		base_model: str = self.config["checkpoint"]
+		performance: str = str(paint_cfg["performance"])
+		image_size: str = paint_cfg["image_size"]
 
-		styles: list[str] = paint_cfg.get("styles", ["Fooocus V2"])
+		styles: list[str] = paint_cfg["styles"]
 
 		sdxl_offset_lora: dict[str, Any] = {
 			"enabled": True,
@@ -89,18 +88,16 @@ class FooocusArtist(Artist):
 
 		payload: dict[str, Any] = {
 			"prompt": prompt,
-			"negative_prompt": paint_cfg.get(
-				"negative_prompt", "watermark,signiture,logo,text"
-			),
+			"negative_prompt": paint_cfg["negative_prompt"],
 			"style_selections": styles,
 			"performance_selection": performance,
-			"aspect_ratios_selection": ar,
+			"aspect_ratios_selection": image_size,
 			"image_seed": seed,
 			"base_model_name": base_model,
 			"loras": [
 				sdxl_offset_lora,
 			],
-			"guidance_scale": paint_cfg.get("guidance_scale", 4),
+			"guidance_scale": paint_cfg["guidance_scale"],
 		}
 		payload.update(basic_payload_params)
 
@@ -119,22 +116,16 @@ class FooocusArtist(Artist):
 
 			# get generated images paths from data
 			real_images_paths: list[Path] = get_real_images_paths(
-				data, self.config.get("fooocus_path")
+				data, self.config["path"]
 			)
 
 			# move and rename images to the desired location and name
 			# use default dir
-			move_rename_images(real_images_paths, image_name_stem)
+			output_dir: Path = paint_cfg["output_folder"]
+			move_rename_images(real_images_paths, image_name_stem, output_dir)
 
 			return True
 
 		print(f"API Error {response.status_code}: {response.text}")
 		print(f"Retrieved data: {data}")
 		return False
-
-
-if __name__ == "__main__":
-	from config import FOOOCUS_CONFIG
-
-	artist = FooocusArtist(FOOOCUS_CONFIG)
-	artist.paint("water color painting of a dog", "watercolor_dog", {})

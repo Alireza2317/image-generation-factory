@@ -14,6 +14,12 @@ class ArtistType(StrEnum):
 	FOOOCUS = "fooocus"
 
 
+class Performance(StrEnum):
+	XSPEED = "Extreme Speed"
+	SPEED = "Speed"
+	QUALITY = "Quality"
+
+
 class FooocusConfig(BaseModel):
 	url: str = "http://127.0.0.1:8888"
 	checkpoint: str = "juggernautXL_v8Rundiffusion.safetensors"
@@ -41,6 +47,9 @@ class PaintConfig(BaseModel):
 	negative_prompt: str = "low quality, text, watermark, ugly, signiture"
 	guidance_scale: int = 4
 	output_folder: Path = Path("./images")
+	seed: int = -1
+	N_images: int = 1
+	performance: Performance = Performance.XSPEED
 
 
 class Settings(BaseSettings):

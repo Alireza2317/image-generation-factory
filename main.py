@@ -1,13 +1,13 @@
 from datetime import datetime
 from settings import settings, ArtistType, BrainType
 from brains.base_brain import Brain
+from artists.base_artist import Artist
 from brains.brain_ollama import OllamaBrain
 from brains.brain_gemini import GeminiBrain
-from artists.base_artist import Artist
 from artists.artist_fooocus import FooocusArtist
 from artists.artist_banana import BananaArtist
 from core.csv_manager import AdobeCsvManager
-from core.pipeline import ProductionPipeline
+from core.pipeline.meta import MetaPipeline, MetaJobConfig
 from core.services import ServerRunner
 from prompts.prompt_manager import MetaPromptManager
 
@@ -44,7 +44,7 @@ def main() -> None:
 
 	csv_manager = AdobeCsvManager(filepath=settings.csv_path)
 
-	pipeline = ProductionPipeline(brain=brain, artist=artist, csv_manager=csv_manager)
+	pipeline = MetaPipeline(brain=brain, artist=artist, csv_manager=csv_manager)
 
 	meta_prompt_manager = MetaPromptManager(settings.meta_prompts_path)
 
@@ -55,11 +55,12 @@ def main() -> None:
 		for niche_name, meta_prompt in meta_prompt_manager.meta_prompts():
 			for i in range(1, N_image_per_niche + 1):
 				image_name: str = f"{niche_name}_{i}_{formatted_datetime()}"
-				pipeline.run_job(
-					meta_prompt,
+				job_config = MetaJobConfig(
+					meta_prompt=meta_prompt,
 					image_name_stem=image_name,
 					paint_config=settings.paint.model_dump(),
 				)
+				pipeline.run_job(job_config)
 
 
 if __name__ == "__main__":

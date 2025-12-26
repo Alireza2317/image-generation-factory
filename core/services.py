@@ -4,13 +4,11 @@ import sys
 import time
 import requests
 from pathlib import Path
-from dotenv import load_dotenv
+from settings import settings
 
-load_dotenv()
 
-OLLAMA_URL = os.getenv("OLLAMA_URL", "http://127.0.0.1:11434")
-FOOOCUS_URL = os.getenv("FOOOCUS_URL", "http://127.0.0.1:8888/docs")
-
+OLLAMA_URL: str = settings.ollama.url
+FOOOCUS_URL: str = f"{settings.fooocus.url.rstrip('/')}/docs"
 
 class ServerRunner:
 	def __init__(self, run_ollama: bool, run_fooocus: bool):
@@ -33,8 +31,8 @@ class ServerRunner:
 				self.venv_python = self.fooocus_dir / "venv" / "bin" / "python"
 
 		# Process handles
-		self.proc_ollama: subprocess.Popen | None = None
-		self.proc_fooocus: subprocess.Popen | None = None
+		self.proc_ollama: subprocess.Popen[bytes] | None = None
+		self.proc_fooocus: subprocess.Popen[bytes] | None = None
 
 		# OWNERSHIP FLAGS (Default to False)
 		# If True, we started it, so we must kill it.
@@ -125,7 +123,7 @@ class ServerRunner:
 						self.proc_ollama.terminate()
 					sys.exit(1)
 
-	def __exit__(self, exc_type, exc_val, exc_tb):
+	def __exit__(self, exc_type, exc_val, exc_tb) -> None:  # type: ignore
 		if self.run_fooocus:
 			# Only kill Fooocus if we started it
 			if self.owns_fooocus and self.proc_fooocus:

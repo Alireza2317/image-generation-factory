@@ -7,22 +7,17 @@ from pathlib import Path
 from settings import settings
 
 
-OLLAMA_URL: str = settings.ollama.url
-FOOOCUS_URL: str = f"{settings.fooocus.url.rstrip('/')}/docs"
-
 class ServerRunner:
 	def __init__(self, run_ollama: bool, run_fooocus: bool):
 		self.run_ollama = run_ollama
 		self.run_fooocus = run_fooocus
 
+		if run_ollama:
+			self.ollama_url: str = settings.ollama.url
+
 		if run_fooocus:
-			raw_fooocus_path: str = os.getenv("FOOOCUS_API_PATH", "")
-			if not raw_fooocus_path:
-				raise ValueError(
-					"Configuration Error: `FOOOCUS_API_PATH` is missing.\n"
-					+ "Create a .env file based on .env.example and set the path."
-				)
-			self.fooocus_dir: Path = Path(raw_fooocus_path).resolve()
+			self.fooocus_url: str = f"{settings.fooocus.url.rstrip('/')}/docs"
+			self.fooocus_dir: Path = settings.fooocus.path.resolve()
 
 			# Detect OS for correct Python path inside venv
 			if os.name == "nt":
@@ -70,7 +65,7 @@ class ServerRunner:
 
 		if self.run_ollama:
 			# --- 1. OLLAMA LOGIC ---
-			if self._is_service_running("Ollama", OLLAMA_URL):
+			if self._is_service_running("Ollama", self.ollama_url):
 				self.owns_ollama = False
 			else:
 				print("Starting Ollama (CPU Mode)...")
@@ -89,7 +84,7 @@ class ServerRunner:
 					self.owns_ollama = True
 
 					# Wait for it to actually start
-					if not self._wait_for_service("Ollama", OLLAMA_URL):
+					if not self._wait_for_service("Ollama", self.ollama_url):
 						sys.exit(1)
 				except FileNotFoundError:
 					print("❌ Error: Ollama not installed.")
@@ -97,7 +92,7 @@ class ServerRunner:
 
 		if self.run_fooocus:
 			# --- 2. FOOOCUS LOGIC ---
-			if self._is_service_running("Fooocus-API", FOOOCUS_URL):
+			if self._is_service_running("Fooocus-API", self.fooocus_url):
 				self.owns_fooocus = False
 			else:
 				print("Starting Fooocus-API...")
@@ -117,7 +112,7 @@ class ServerRunner:
 				)
 				self.owns_fooocus = True
 
-				if not self._wait_for_service("Fooocus", FOOOCUS_URL):
+				if not self._wait_for_service("Fooocus", self.fooocus_url):
 					# Cleanup if Fooocus fails
 					if self.proc_ollama and self.owns_ollama:
 						self.proc_ollama.terminate()

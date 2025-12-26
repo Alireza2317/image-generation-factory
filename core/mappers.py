@@ -34,14 +34,14 @@ class IdeaMapper:
 			# convert to comma-seperated str
 			keywords: str = ",".join(raw_keywords)
 		else:
-			keywords: str = raw_keywords.strip()
+			keywords = raw_keywords.strip()
 
 		# handling category, should be int
 
 		try:
 			category: int = int(raw_data.get("category", DEFAULT_CATEGORY_NUMBER))
 		except (ValueError, TypeError):
-			category: int = DEFAULT_CATEGORY_NUMBER
+			category = DEFAULT_CATEGORY_NUMBER
 
 		return ImageIdea(
 			prompt=prompt,

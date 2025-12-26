@@ -1,5 +1,4 @@
 from datetime import datetime
-from pathlib import Path
 from config import (
 	FOOOCUS_CONFIG,
 	OLLAMA_CONFIG,
@@ -47,7 +46,7 @@ def get_workers() -> tuple[Brain, Artist]:
 
 
 def main():
-	N_image_per_niche: int = 3
+	N_image_per_niche: int = 1
 	brain, artist = get_workers()
 
 	csv_manager = AdobeCsvManager(filepath=CSV_PATH)

@@ -4,3 +4,4 @@ log*/
 meta_prompts/
 **/__pycache__/
 .env
+.vscode/

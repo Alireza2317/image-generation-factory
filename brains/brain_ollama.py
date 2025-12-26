@@ -9,7 +9,7 @@ from core.mappers import IdeaMapper
 class OllamaBrain(Brain):
 	def __init__(self, config: dict[str, Any]) -> None:
 		self.model = config["model"]
-		self.url = config["url"]
+		self.url = config["url"] + "/api/generate"
 
 	def get_response(self, meta_prompt: str) -> ImageIdea | None:
 		payload = {

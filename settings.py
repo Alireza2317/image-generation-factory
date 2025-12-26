@@ -20,6 +20,11 @@ class Performance(StrEnum):
 	QUALITY = "Quality"
 
 
+class PipelineType(StrEnum):
+	META = "meta"
+	WILDCARD = "wildcard"
+
+
 class FooocusConfig(BaseModel):
 	url: str = "http://127.0.0.1:8888"
 	checkpoint: str = "juggernautXL_v8Rundiffusion.safetensors"
@@ -53,10 +58,13 @@ class PaintConfig(BaseModel):
 
 
 class Settings(BaseSettings):
-	active_brain: BrainType = BrainType.GEMINI
-	active_artist: ArtistType = ArtistType.BANANA
+	active_brain: BrainType = BrainType.OLLAMA
+	active_artist: ArtistType = ArtistType.FOOOCUS
+	active_pipeline: PipelineType = PipelineType.META
+
 	csv_path: Path = Path("./metadata.csv")
 	meta_prompts_path: Path = Path("./prompts/meta_prompts")
+	wildcards_path: Path = Path("./prompts/wildcards")
 
 	fooocus: FooocusConfig
 	banana: BananaConfig

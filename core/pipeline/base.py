@@ -1,5 +1,8 @@
 from abc import ABC, abstractmethod
 from pydantic import BaseModel
+from artists.base_artist import Artist
+from brains.base_brain import Brain
+from core.csv_manager import AdobeCsvManager
 
 
 class JobConfig(BaseModel):
@@ -12,6 +15,13 @@ class JobConfig(BaseModel):
 
 
 class BasePipeline[T_JobConfig: JobConfig](ABC):
+	def __init__(
+		self, brain: Brain, artist: Artist, csv_manager: AdobeCsvManager
+	) -> None:
+		self.brain = brain
+		self.artist = artist
+		self.csv_manager = csv_manager
+
 	@abstractmethod
 	def run_job(self, config: T_JobConfig) -> bool:
 		"""

@@ -1,7 +1,8 @@
 images*/
 log*/
 *.csv
-meta_prompts/
+prompts/meta_prompts/
+prompts/wildcards/
 **/__pycache__/
 .env
 .vscode/

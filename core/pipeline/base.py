@@ -11,9 +11,9 @@ class JobConfig(BaseModel):
 	pass
 
 
-class BasePipeline(ABC):
+class BasePipeline[T_JobConfig: JobConfig](ABC):
 	@abstractmethod
-	def run_job(self, config: JobConfig) -> bool:
+	def run_job(self, config: T_JobConfig) -> bool:
 		"""
 		Runs the full cycle for one single batch of images.
 		The implementation will be specific to each pipeline.

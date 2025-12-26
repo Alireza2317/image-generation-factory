@@ -1,14 +1,5 @@
 from datetime import datetime
-from config import (
-	FOOOCUS_CONFIG,
-	OLLAMA_CONFIG,
-	CSV_PATH,
-	PAINT_CONFIG,
-	BANANA_CONFIG,
-	ACTIVE_ARTIST,
-	ACTIVE_BRAIN,
-	META_PROMPTS_PATH,
-)
+from settings import settings, ArtistType, BrainType
 from brains.base_brain import Brain
 from brains.brain_ollama import OllamaBrain
 from brains.brain_gemini import GeminiBrain
@@ -26,43 +17,48 @@ def formatted_datetime() -> str:
 
 
 def get_workers() -> tuple[Brain, Artist]:
-	if ACTIVE_BRAIN.lower() == "ollama":
-		brain = OllamaBrain(config=OLLAMA_CONFIG)
-	elif ACTIVE_BRAIN.lower() == "gemini":
+	brain: Brain
+	if settings.active_brain == BrainType.OLLAMA:
+		brain = OllamaBrain(config=settings.ollama.model_dump())
+	elif settings.active_brain == BrainType.GEMINI:
 		brain = GeminiBrain()
 	else:
-		print(f"Unkown brain {ACTIVE_BRAIN}! use `ollama` or `gemini`.")
+		print(f"Unknown brain {settings.active_brain}!")
 		exit(1)
 
-	if ACTIVE_ARTIST.lower() == "banana":
-		artist = BananaArtist(BANANA_CONFIG)
-	elif ACTIVE_ARTIST.lower() == "fooocus":
-		artist = FooocusArtist(config=FOOOCUS_CONFIG)
+	artist: Artist
+	if settings.active_artist == ArtistType.BANANA:
+		artist = BananaArtist(config=settings.banana.model_dump())
+	elif settings.active_artist == ArtistType.FOOOCUS:
+		artist = FooocusArtist(config=settings.fooocus.model_dump())
 	else:
-		print(f"Unkown artist {ACTIVE_ARTIST}! use `banana` or `fooocus`.")
+		print(f"Unknown artist {settings.active_artist}!")
 		exit(1)
 
 	return brain, artist
 
 
-def main():
+def main() -> None:
 	N_image_per_niche: int = 1
 	brain, artist = get_workers()
 
-	csv_manager = AdobeCsvManager(filepath=CSV_PATH)
+	csv_manager = AdobeCsvManager(filepath=settings.csv_path)
 
 	pipeline = ProductionPipeline(brain=brain, artist=artist, csv_manager=csv_manager)
 
-	meta_prompt_manager = MetaPromptManager(META_PROMPTS_PATH)
+	meta_prompt_manager = MetaPromptManager(settings.meta_prompts_path)
 
-	need_ollama: bool = ACTIVE_BRAIN.lower() == "ollama"
-	need_fooocus: bool = ACTIVE_ARTIST.lower() == "fooocus"
+	need_ollama: bool = settings.active_brain == BrainType.OLLAMA
+	need_fooocus: bool = settings.active_artist == ArtistType.FOOOCUS
+
 	with ServerRunner(run_ollama=need_ollama, run_fooocus=need_fooocus):
 		for niche_name, meta_prompt in meta_prompt_manager.meta_prompts():
 			for i in range(1, N_image_per_niche + 1):
 				image_name: str = f"{niche_name}_{i}_{formatted_datetime()}"
 				pipeline.run_job(
-					meta_prompt, image_name_stem=image_name, paint_config=PAINT_CONFIG
+					meta_prompt,
+					image_name_stem=image_name,
+					paint_config=settings.paint.model_dump(),
 				)
 
 

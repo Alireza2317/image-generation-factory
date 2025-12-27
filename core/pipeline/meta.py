@@ -47,21 +47,9 @@ class MetaPipeline(BasePipeline[MetaJobConfig]):
 
 		print("✅ Image generated.")
 
-		print("Writing Metadata ... ", end="")
-		try:
-			if (n := config.paint_config.get("N_images", 1)) == 1:
-				self.csv_manager.save_record(
-					image_idea, final_filename=f"{config.image_name_stem}.png"
-				)
-			else:
-				for i in range(1, n + 1):
-					self.csv_manager.save_record(
-						image_idea, final_filename=f"{config.image_name_stem}_{i}.png"
-					)
-		except Exception as e:
-			print(f"❌ Failed to write the metadata! {e}")
-			return False
+		self.csv_manager.save_job_metadata(
+			image_idea, config.image_name_stem, config.paint_config["N_images"]
+		)
 
-		print("✅ Metadata saved.")
 		print(f"✅ {'-' * 5} Finished cycle. {'-' * 5}\n")
 		return True

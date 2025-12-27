@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Any
 from settings import settings, ArtistType, BrainType, PipelineType
 
 from brains.base_brain import Brain
@@ -48,7 +49,7 @@ def get_workers() -> tuple[Brain, Artist]:
 
 def get_pipeline(
 	brain: Brain, artist: Artist, csv_manager: AdobeCsvManager
-) -> BasePipeline:
+) -> BasePipeline[Any]:
 	if settings.active_pipeline == PipelineType.META:
 		return MetaPipeline(brain=brain, artist=artist, csv_manager=csv_manager)
 	elif settings.active_pipeline == PipelineType.WILDCARD:

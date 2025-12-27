@@ -70,6 +70,7 @@ class Settings(BaseSettings):
 	meta_prompts_path: Path = Path("./prompts/meta_prompts")
 	wildcards_path: Path = Path("./prompts/wildcards")
 	wildcard_prompts_path: Path = Path("./prompts/wildcard_prompts")
+	instruction_path: Path = Path("./prompts/instructions")
 
 	gemini: GeminiConfig = GeminiConfig()
 	ollama: OllamaConfig = OllamaConfig()

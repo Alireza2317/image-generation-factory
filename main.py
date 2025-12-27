@@ -16,6 +16,7 @@ from core.services import ServerRunner
 from core.pipeline.meta import MetaPipeline, MetaJobConfig
 from core.pipeline.wildcard import WildcardPipeline, WildcardConfig
 from prompts.wildcard_manager import WildcardResolver
+from prompts.instruction_manager import InstructionManager
 from prompts.prompt_manager import MetaPromptManager, WildcardPromptManager
 
 
@@ -71,15 +72,17 @@ def run_wildcard_pipeline(
 	csv_manager: AdobeCsvManager,
 	n_image_per_niche: int = 1,
 ) -> None:
-	wildcard_prompt_manager = WildcardPromptManager()
-
 	wildcard_resolver = WildcardResolver(settings.wildcards_path)
+	instruction_manager = InstructionManager(settings.instruction_path)
 
-	pipeline = WildcardPipeline(brain, artist, csv_manager, wildcard_resolver)
+	pipeline = WildcardPipeline(
+		brain, artist, csv_manager, wildcard_resolver, instruction_manager
+	)
 
-	for raw_prompt in wildcard_prompt_manager.prompts():
+	wildcard_prompt_manager = WildcardPromptManager(settings.wildcard_prompts_path)
+	for niche_name, raw_prompt in wildcard_prompt_manager.prompts():
 		for i in range(1, n_image_per_niche + 1):
-			image_name: str = f"wildcard_{i}_{formatted_datetime()}"
+			image_name: str = f"{niche_name}_{i}_{formatted_datetime()}"
 			job_config = WildcardConfig(
 				raw_prompt=raw_prompt,
 				image_name_stem=image_name,

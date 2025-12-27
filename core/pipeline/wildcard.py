@@ -5,6 +5,7 @@ from artists.base_artist import Artist
 from core.csv_manager import AdobeCsvManager
 from core.models import ImageIdea
 from prompts.wildcard_manager import WildcardResolver
+from prompts.instruction_manager import InstructionManager
 
 from core.pipeline.base import BasePipeline, JobConfig
 
@@ -22,21 +23,26 @@ class WildcardPipeline(BasePipeline[WildcardConfig]):
 		artist: Artist,
 		csv_manager: AdobeCsvManager,
 		wildcard_resolver: WildcardResolver,
+		instruction_manager: InstructionManager,
 	) -> None:
 		self.brain = brain
 		self.artist = artist
 		self.csv_manager = csv_manager
 		self.wildcard_resolver = wildcard_resolver
+		self.instruction_manager = instruction_manager
 
 	def run_job(self, config: WildcardConfig) -> bool:
 		resolved_prompt: str = self.wildcard_resolver.resolve(config.raw_prompt)
 		print("🧠 Brainstorming... ", end="")
 
-		# FIXME: improve instruction wording, just a quick draft for now
-		instruction: str = f"""Generate a detailed image prompt based on the following idea. which is inside ``` symbols. Respond in JSON format with fields: 
-		prompt, title, keywords (comma-separated). Be descriptive and imaginative.
-		idea = ```{resolved_prompt}```
-		"""
+		instruction: str | None = self.instruction_manager.get_instruction(
+			"json_instruction"
+		)
+		if not instruction:
+			print("❌ Instruction not found!")
+			return False
+
+		instruction += f"\nidea=```{resolved_prompt}```"
 
 		image_idea: ImageIdea | None = self.brain.get_response(instruction)
 		if not image_idea:

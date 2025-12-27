@@ -29,4 +29,35 @@ class WildcardPipeline(BasePipeline[WildcardConfig]):
 		self.wildcard_manager = wildcard_manager
 
 	def run_job(self, config: WildcardConfig) -> bool:
-		return False
+		resolved_prompt: str = self.wildcard_manager.resolve(config.raw_prompt)
+		print("🧠 Brainstorming... ", end="")
+
+		# FIXME: improve instruction wording, just a quick draft for now
+		instruction: str = f"""Generate a detailed image prompt based on the following idea. which is inside ``` symbols. Respond in JSON format with fields: 
+		prompt, title, keywords (comma-separated). Be descriptive and imaginative.
+		idea = ```{resolved_prompt}```
+		"""
+
+		image_idea: ImageIdea | None = self.brain.get_response(instruction)
+		if not image_idea:
+			print("❌ LLM failed to generate idea!")
+			return False
+		print("✅ Idea generated.")
+		print("🎨 Painting ... ", end="")
+		success_paint: bool = self.artist.paint(
+			image_idea.prompt,
+			image_name_stem=config.image_name_stem,
+			paint_cfg=config.paint_config,
+		)
+		if not success_paint:
+			print("❌ Artist failed to generate image!")
+			return False
+		print("✅ Image generated.")
+
+		self.csv_manager.save_job_metadata(
+			image_idea, config.image_name_stem, config.paint_config["N_images"]
+		)
+
+		print(f"✅ {'-' * 5} Finished cycle. {'-' * 5}\n")
+
+		return True

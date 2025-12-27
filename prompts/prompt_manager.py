@@ -32,3 +32,15 @@ class MetaPromptManager:
 			niche_name: str = full_meta_prompt_path.stem
 
 			yield niche_name, prompt
+
+
+class WildcardPromptManager:
+	def __init__(self) -> None:
+		pass
+
+	def prompts(self) -> Generator[str, None, None]:
+		yield "A futuristic __city__ at __time_of_day__ with flying __vehicle__s and __color__ lights."
+		yield "A serene __nature_location__ with a crystal-clear river and __forest_animal__s."
+		yield "A __sci_fi_job__ exploring an alien planet with __strange_adj__ rock formations."
+		yield "A majestic __castle__ on a hilltop overlooking a vast __fantasy_kingdom__."
+		yield "A bustling marketplace in a __fantasy_world__ with __colorful_adj__ stalls and __fantasy_character__s."

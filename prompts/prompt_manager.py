@@ -16,20 +16,14 @@ class MetaPromptManager:
 			raise ValueError(
 				f"meta_prompts_path must be a valid directory: {meta_prompts_path}"
 			)
-		self.meta_prompts_path = meta_prompts_path
-
-	def _get_meta_prompts_paths(self) -> list[Path]:
-		return [
-			(self.meta_prompts_path / prompt_file)
-			for prompt_file in sorted(os.listdir(self.meta_prompts_path))
-		]
+		self.path = meta_prompts_path
 
 	def meta_prompts(self) -> Generator[tuple[str, str], None, None]:
-		for full_meta_prompt_path in self._get_meta_prompts_paths():
-			with open(full_meta_prompt_path, "r") as file:
+		for prompt_path in sorted(self.path.iterdir()):
+			with open(prompt_path, mode="r", encoding="utf-8") as file:
 				prompt: str = file.read()
 
-			niche_name: str = full_meta_prompt_path.stem
+			niche_name: str = prompt_path.stem
 
 			yield niche_name, prompt
 

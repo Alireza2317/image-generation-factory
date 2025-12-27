@@ -31,6 +31,10 @@ class FooocusConfig(BaseModel):
 	path: Path
 
 
+class GeminiConfig(BaseModel):
+	model: str = "gemini-2.5-flash"
+
+
 class OllamaConfig(BaseModel):
 	url: str = "http://127.0.0.1:11434"
 	model: str = "llama3.2"
@@ -58,17 +62,20 @@ class PaintConfig(BaseModel):
 
 
 class Settings(BaseSettings):
-	active_brain: BrainType = BrainType.OLLAMA
-	active_artist: ArtistType = ArtistType.FOOOCUS
-	active_pipeline: PipelineType = PipelineType.META
+	active_brain: BrainType = BrainType.GEMINI
+	active_artist: ArtistType = ArtistType.BANANA
+	active_pipeline: PipelineType = PipelineType.WILDCARD
 
 	csv_path: Path = Path("./metadata.csv")
 	meta_prompts_path: Path = Path("./prompts/meta_prompts")
 	wildcards_path: Path = Path("./prompts/wildcards")
 
-	fooocus: FooocusConfig
-	banana: BananaConfig
+	gemini: GeminiConfig = GeminiConfig()
 	ollama: OllamaConfig = OllamaConfig()
+
+	banana: BananaConfig
+	fooocus: FooocusConfig
+
 	paint: PaintConfig = PaintConfig()
 
 	model_config = SettingsConfigDict(

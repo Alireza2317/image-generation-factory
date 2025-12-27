@@ -28,7 +28,7 @@ def get_workers() -> tuple[Brain, Artist]:
 	if settings.active_brain == BrainType.OLLAMA:
 		brain = OllamaBrain(config=settings.ollama.model_dump())
 	elif settings.active_brain == BrainType.GEMINI:
-		brain = GeminiBrain()
+		brain = GeminiBrain(config=settings.gemini.model_dump())
 	else:
 		print(f"Unknown brain {settings.active_brain}!")
 		exit(1)

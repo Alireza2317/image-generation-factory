@@ -12,8 +12,8 @@ from core.mappers import IdeaMapper
 
 
 class GeminiBrain(Brain):
-	def __init__(self, model: str = "gemini-2.5-flash") -> None:
-		self.model = model
+	def __init__(self, config: dict[str, Any]) -> None:
+		self.model = config['model']
 		self.client = genai.Client()
 
 	def get_response(self, meta_prompt: str) -> ImageIdea | None:

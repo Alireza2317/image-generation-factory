@@ -33,3 +33,33 @@ class AdobeCsvManager:
 					"",  # empty for releases column
 				]
 			)
+
+	def save_job_metadata(
+		self,
+		image_idea: ImageIdea,
+		image_name_stem: str,
+		n_images: int,
+	) -> bool:
+		"""
+		Saves metadata for a job, and handles multiple images names, and calls
+		save_record for each.
+		"""
+
+		print("🗒️ Writing Metadata ... ", end="")
+		try:
+			if n_images == 1:
+				self.save_record(image_idea, final_filename=f"{image_name_stem}.png")
+			else:
+				n_digits = len(str(n_images))
+				print("Saved record for image number ", end="")
+				for i in range(1, n_images + 1):
+					self.save_record(
+						image_idea,
+						final_filename=f"{image_name_stem}_{i:0{n_digits}}.png",
+					)
+					print(f"{i}", end=", " if i < n_images else ".\n")
+			print("✅ Metadata saved.")
+			return True
+		except Exception as e:
+			print(f"❌ Failed to write the metadata! {e}")
+			return False

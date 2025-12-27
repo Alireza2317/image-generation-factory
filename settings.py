@@ -25,12 +25,6 @@ class PipelineType(StrEnum):
 	WILDCARD = "wildcard"
 
 
-class FooocusConfig(BaseModel):
-	url: str = "http://127.0.0.1:8888"
-	checkpoint: str = "juggernautXL_v8Rundiffusion.safetensors"
-	path: Path
-
-
 class GeminiConfig(BaseModel):
 	model: str = "gemini-2.5-flash"
 
@@ -45,6 +39,12 @@ class BananaConfig(BaseModel):
 	model: str = "gemini-2.5-flash-image"
 	gpu_slug: str = "a100-80gb"
 	gpu_type: str = "A100"
+
+
+class FooocusConfig(BaseModel):
+	url: str = "http://127.0.0.1:8888"
+	checkpoint: str = "juggernautXL_v8Rundiffusion.safetensors"
+	path: Path
 
 
 class PaintConfig(BaseModel):
@@ -69,6 +69,7 @@ class Settings(BaseSettings):
 	csv_path: Path = Path("./metadata.csv")
 	meta_prompts_path: Path = Path("./prompts/meta_prompts")
 	wildcards_path: Path = Path("./prompts/wildcards")
+	wildcard_prompts_path: Path = Path("./prompts/wildcard_prompts")
 
 	gemini: GeminiConfig = GeminiConfig()
 	ollama: OllamaConfig = OllamaConfig()

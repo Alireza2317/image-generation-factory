@@ -3,6 +3,7 @@ log*/
 *.csv
 prompts/meta_prompts/
 prompts/wildcards/
+prompts/wildcard_prompts/
 **/__pycache__/
 .env
 .vscode/

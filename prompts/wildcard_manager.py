@@ -13,14 +13,17 @@ class WildcardManager:
 
 	"""
 
-	def __init__(self, wildcards_path: Path) -> None:
+	def __init__(self, wildcards_path: Path, seed: int | None = None) -> None:
 		"""
 		wildcards_path: Path to directory containing wildcard files,
 		where each file contains a list of wildcard prompts.
-
+		It searches recursively for .txt files in the directory.
 		Raises:
 			ValueError: If wildcards_path is not a valid directory.
 		"""
+		if seed is not None:
+			random.seed(seed)
+
 		if not wildcards_path.is_dir():
 			raise ValueError(
 				f"wildcards_path must be a valid directory: {wildcards_path}"
@@ -28,6 +31,15 @@ class WildcardManager:
 		self.path = wildcards_path
 		self._wildcards: dict[str, list[str]] = {}
 		self._populate_wildcards()
+
+	def set_seed(self, seed: int | None = None) -> None:
+		"""
+		Sets the random seed for wildcard resolution.
+		Args:
+			seed: The seed value to set. 
+				If None, the random generator acts randomly.
+		"""
+		random.seed(seed)
 
 	def _get_all_wildcard_files(self) -> list[Path]:
 		wildcard_files: list[Path] = []

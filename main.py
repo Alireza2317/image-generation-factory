@@ -15,7 +15,7 @@ from core.services import ServerRunner
 
 from core.pipeline.meta import MetaPipeline, MetaJobConfig
 from core.pipeline.wildcard import WildcardPipeline, WildcardConfig
-from prompts.wildcard_manager import WildcardManager
+from prompts.wildcard_manager import WildcardResolver
 from prompts.prompt_manager import MetaPromptManager, WildcardPromptManager
 
 
@@ -73,9 +73,9 @@ def run_wildcard_pipeline(
 ) -> None:
 	wildcard_prompt_manager = WildcardPromptManager()
 
-	wildcard_manager = WildcardManager(settings.wildcards_path)
+	wildcard_resolver = WildcardResolver(settings.wildcards_path)
 
-	pipeline = WildcardPipeline(brain, artist, csv_manager, wildcard_manager)
+	pipeline = WildcardPipeline(brain, artist, csv_manager, wildcard_resolver)
 
 	for raw_prompt in wildcard_prompt_manager.prompts():
 		for i in range(1, n_image_per_niche + 1):

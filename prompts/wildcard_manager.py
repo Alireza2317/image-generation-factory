@@ -4,7 +4,7 @@ import re
 from pathlib import Path
 
 
-class WildcardManager:
+class WildcardResolver:
 	"""
 	Manages and resolves wildcards in prompts.
 
@@ -36,7 +36,7 @@ class WildcardManager:
 		"""
 		Sets the random seed for wildcard resolution.
 		Args:
-			seed: The seed value to set. 
+			seed: The seed value to set.
 				If None, the random generator acts randomly.
 		"""
 		random.seed(seed)

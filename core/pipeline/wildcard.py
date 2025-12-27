@@ -4,7 +4,7 @@ from brains.base_brain import Brain
 from artists.base_artist import Artist
 from core.csv_manager import AdobeCsvManager
 from core.models import ImageIdea
-from prompts.wildcard_manager import WildcardManager
+from prompts.wildcard_manager import WildcardResolver
 
 from core.pipeline.base import BasePipeline, JobConfig
 
@@ -21,15 +21,15 @@ class WildcardPipeline(BasePipeline[WildcardConfig]):
 		brain: Brain,
 		artist: Artist,
 		csv_manager: AdobeCsvManager,
-		wildcard_manager: WildcardManager,
+		wildcard_resolver: WildcardResolver,
 	) -> None:
 		self.brain = brain
 		self.artist = artist
 		self.csv_manager = csv_manager
-		self.wildcard_manager = wildcard_manager
+		self.wildcard_resolver = wildcard_resolver
 
 	def run_job(self, config: WildcardConfig) -> bool:
-		resolved_prompt: str = self.wildcard_manager.resolve(config.raw_prompt)
+		resolved_prompt: str = self.wildcard_resolver.resolve(config.raw_prompt)
 		print("🧠 Brainstorming... ", end="")
 
 		# FIXME: improve instruction wording, just a quick draft for now

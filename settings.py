@@ -58,7 +58,7 @@ class PaintConfig(BaseModel):
 	output_folder: Path = Path("./images")
 	seed: int = -1
 	N_images: int = 1
-	performance: Performance = Performance.XSPEED
+	performance: Performance = Performance.QUALITY
 	image_extension: str = "png"
 
 
@@ -67,7 +67,7 @@ class Settings(BaseSettings):
 	active_artist: ArtistType = ArtistType.BANANA
 	active_pipeline: PipelineType = PipelineType.WILDCARD
 
-	csv_path: Path = Path("./metadata.csv")
+	csv_path: Path = Path("./metadata/adobe.csv")
 	metadata_image_extension: str = "jpg"
 	meta_prompts_path: Path = Path("./prompts/meta_prompts")
 	wildcards_path: Path = Path("./prompts/wildcards")

@@ -7,7 +7,12 @@ from settings import settings
 class AdobeCsvManager:
 	def __init__(self, filepath: Path) -> None:
 		self.filepath = filepath
+		self._ensure_path()
 		self._ensure_header()
+
+	def _ensure_path(self) -> None:
+		"""Creates the directory if it doesn't exist."""
+		self.filepath.parent.mkdir(parents=True, exist_ok=True)
 
 	def _ensure_header(self) -> None:
 		"""Creates the file with Adobe headers if it doesn't exist."""

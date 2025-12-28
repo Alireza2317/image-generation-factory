@@ -19,6 +19,9 @@ class MetaPromptManager:
 
 	def meta_prompts(self) -> Generator[tuple[str, str], None, None]:
 		for prompt_path in sorted(self.path.iterdir()):
+			if prompt_path.suffix != ".txt":
+				continue
+
 			with open(prompt_path, mode="r", encoding="utf-8") as file:
 				prompt: str = file.read()
 
@@ -33,6 +36,9 @@ class WildcardPromptManager:
 
 	def prompts(self) -> Generator[tuple[str, str], None, None]:
 		for prompt_path in sorted(self.path.iterdir()):
+			if prompt_path.suffix != ".txt":
+				continue
+
 			with open(prompt_path, mode="r", encoding="utf-8") as file:
 				raw_prompt: str = file.read()
 

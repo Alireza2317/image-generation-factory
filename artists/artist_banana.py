@@ -47,9 +47,7 @@ class BananaArtist(Artist):
 				output_dir: Path = paint_cfg["output_folder"]
 				output_dir.mkdir(parents=True, exist_ok=True)
 				img_ext = paint_cfg["image_extension"]
-				output_image_path: Path = (
-					output_dir / f"{image_name_stem}.{img_ext}"
-				)
+				output_image_path: Path = output_dir / f"{image_name_stem}.{img_ext}"
 				image.save(str(output_image_path.resolve()))
 				break
 		else:

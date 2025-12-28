@@ -41,18 +41,14 @@ class WildcardResolver:
 		"""
 		random.seed(seed)
 
-	def _get_all_wildcard_files(self) -> list[Path]:
-		wildcard_files: list[Path] = []
-		for root, _, files in os.walk(self.path):
-			for file in files:
-				if not file.endswith(".txt"):
-					continue
-				full_path: Path = Path(root) / file
-				wildcard_files.append(full_path)
-		return wildcard_files
+	def _get_wildcard_files(self) -> list[Path]:
+		"""Gets all .txt files directly under the wildcards_path."""
+		return [
+			f for f in self.path.iterdir() if f.is_file() and f.suffix == ".txt"
+		]
 
 	def _populate_wildcards(self) -> None:
-		for filepath in self._get_all_wildcard_files():
+		for filepath in self._get_wildcard_files():
 			wildcard_name = filepath.stem
 			try:
 				with filepath.open(mode="r", encoding="utf-8") as f:

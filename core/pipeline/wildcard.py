@@ -6,8 +6,6 @@ from core.csv_manager import AdobeCsvManager
 from core.models import ImageIdea
 from prompts.wildcard_manager import WildcardResolver
 from prompts.instruction_manager import InstructionManager
-from settings import settings
-from prompts.config_manager import ConfigManager
 
 from core.pipeline.base import BasePipeline, JobConfig
 
@@ -32,17 +30,10 @@ class WildcardPipeline(BasePipeline[WildcardConfig]):
 		self.csv_manager = csv_manager
 		self.wildcard_resolver = wildcard_resolver
 		self.instruction_manager = instruction_manager
-		self.default_paint_config = ConfigManager(
-			settings.niche_configs_path
-		).get_config()
 
 	def run_job(self, config: WildcardConfig) -> bool:
 		resolved_prompt: str = self.wildcard_resolver.resolve(config.raw_prompt)
 		print("🧠 Brainstorming... ", end="")
-
-		merged_config = self.default_paint_config.copy()
-		merged_config.update(config.paint_config)
-		config.paint_config = merged_config
 
 		instruction: str | None = self.instruction_manager.get_instruction(
 			"json_instruction"

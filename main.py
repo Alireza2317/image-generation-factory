@@ -95,7 +95,7 @@ def run_wildcard_pipeline(
 
 		for i, raw_prompt in enumerate(niche.prompts, 1):
 			for j in range(1, n_image_per_niche + 1):
-				image_name: str = f"{niche.name}_{i + 1}_{j}_{formatted_datetime()}"
+				image_name: str = f"{niche.name}_{i}_{j}_{formatted_datetime()}"
 				job_config = WildcardConfig(
 					raw_prompt=raw_prompt,
 					image_name_stem=image_name,

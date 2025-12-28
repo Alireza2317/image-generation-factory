@@ -4,6 +4,7 @@ log*/
 prompts/meta_prompts/
 prompts/wildcards/
 prompts/wildcard_prompts/
+prompts/niche_configs/
 **/__pycache__/
 .env
 .vscode/

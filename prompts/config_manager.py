@@ -7,15 +7,22 @@ class ConfigManager:
 	def __init__(self, config_path: Path) -> None:
 		self.path = config_path
 
-	def get_config(self, name: str) -> dict[str, Any]:
+	def get_config(self, name: str = "default") -> dict[str, Any]:
 		"""Load config for specific niche, fallback to default."""
 
-		config_path = self.path / f"{name}.json"
-		if not config_path.exists():
-			print(f"{str(config_path)} was not found, using default config!")
-			from settings import settings
+		niche_config_path = self.path / f"{name}.json"
+		default_config_path = self.path / "default.json"
 
-			return settings.paint.model_dump()
+		if niche_config_path.exists():
+			config_to_load = niche_config_path
+		elif default_config_path.exists():
+			if name != "default":
+				print(f"Warning: Config for '{name}' not found, using default.")
+			config_to_load = default_config_path
+		else:
+			raise FileNotFoundError(
+				f"Neither '{name}.json' nor 'default.json' found in {self.path}"
+			)
 
-		with open(config_path, mode="r", encoding="utf-8") as file:
+		with open(config_to_load, mode="r", encoding="utf-8") as file:
 			return dict(json.load(file))

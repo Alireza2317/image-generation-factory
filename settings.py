@@ -1,5 +1,5 @@
 from pathlib import Path
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from enum import StrEnum
 
@@ -47,31 +47,17 @@ class FooocusConfig(BaseModel):
 	path: Path
 
 
-class PaintConfig(BaseModel):
-	"""Default settings for the painting jobs."""
-
-	aspect_ratio: str = "16:9"
-	image_size: str = "1344*720"
-	styles: list[str] = Field(default_factory=lambda: ["Fooocus V2"])
-	negative_prompt: str = "low quality, text, watermark, ugly, signiture"
-	guidance_scale: int = 4
-	output_folder: Path = Path("./images")
-	seed: int = -1
-	N_images: int = 1
-	performance: Performance = Performance.QUALITY
-	image_extension: str = "png"
-
-
 class Settings(BaseSettings):
 	active_brain: BrainType = BrainType.GEMINI
-	active_artist: ArtistType = ArtistType.BANANA
+	active_artist: ArtistType = ArtistType.FOOOCUS
 	active_pipeline: PipelineType = PipelineType.WILDCARD
 
-	csv_path: Path = Path("./metadata/adobe.csv")
+	csv_path: Path = Path("./metadata.csv")
 	metadata_image_extension: str = "jpg"
 	meta_prompts_path: Path = Path("./prompts/meta_prompts")
 	wildcards_path: Path = Path("./prompts/wildcards")
 	wildcard_prompts_path: Path = Path("./prompts/wildcard_prompts")
+	niche_configs_path: Path = Path("./prompts/niche_configs")
 	instruction_path: Path = Path("./prompts/instructions")
 
 	gemini: GeminiConfig = GeminiConfig()
@@ -79,8 +65,6 @@ class Settings(BaseSettings):
 
 	banana: BananaConfig
 	fooocus: FooocusConfig
-
-	paint: PaintConfig = PaintConfig()
 
 	model_config = SettingsConfigDict(
 		env_file=".env",

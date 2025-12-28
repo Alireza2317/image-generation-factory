@@ -1,6 +1,7 @@
 import csv
 from pathlib import Path
 from core.models import ImageIdea
+from settings import settings
 
 
 class AdobeCsvManager:
@@ -47,15 +48,19 @@ class AdobeCsvManager:
 
 		print("🗒️ Writing Metadata ... ", end="")
 		try:
+			metadata_image_ext = settings.metadata_image_extension
 			if n_images == 1:
-				self.save_record(image_idea, final_filename=f"{image_name_stem}.png")
+				self.save_record(
+					image_idea,
+					final_filename=f"{image_name_stem}.{metadata_image_ext}",
+				)
 			else:
 				n_digits = len(str(n_images))
 				print("Saved record for image number ", end="")
 				for i in range(1, n_images + 1):
 					self.save_record(
 						image_idea,
-						final_filename=f"{image_name_stem}_{i:0{n_digits}}.png",
+						final_filename=f"{image_name_stem}_{i:0{n_digits}}.{metadata_image_ext}",
 					)
 					print(f"{i}", end=", " if i < n_images else ".\n")
 			print("✅ Metadata saved.")

@@ -59,6 +59,7 @@ class PaintConfig(BaseModel):
 	seed: int = -1
 	N_images: int = 1
 	performance: Performance = Performance.XSPEED
+	image_extension: str = "png"
 
 
 class Settings(BaseSettings):
@@ -67,6 +68,7 @@ class Settings(BaseSettings):
 	active_pipeline: PipelineType = PipelineType.WILDCARD
 
 	csv_path: Path = Path("./metadata.csv")
+	metadata_image_extension: str = "jpg"
 	meta_prompts_path: Path = Path("./prompts/meta_prompts")
 	wildcards_path: Path = Path("./prompts/wildcards")
 	wildcard_prompts_path: Path = Path("./prompts/wildcard_prompts")

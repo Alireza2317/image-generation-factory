@@ -101,6 +101,7 @@ def run_wildcard_pipeline(
 					raw_prompt=raw_prompt,
 					image_name_stem=image_name,
 					paint_config=merged_config,
+					llm_instruction="sdxl_instruction"
 				)
 				pipeline.run_job(job_config)
 

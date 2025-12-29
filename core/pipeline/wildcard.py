@@ -14,6 +14,7 @@ class WildcardConfig(JobConfig):
 	raw_prompt: str
 	image_name_stem: str
 	paint_config: dict[str, Any]
+	llm_instruction: str
 
 
 class WildcardPipeline(BasePipeline[WildcardConfig]):
@@ -36,7 +37,7 @@ class WildcardPipeline(BasePipeline[WildcardConfig]):
 		print("🧠 Brainstorming... ", end="")
 
 		instruction: str | None = self.instruction_manager.get_instruction(
-			"json_instruction"
+			config.llm_instruction
 		)
 		if not instruction:
 			print("❌ Instruction not found!")

@@ -90,6 +90,7 @@ def run_wildcard_pipeline(
 
 	for niche in niche_manager.niches():
 		print(f"Processing niche: {niche.name}")
+		wildcard_resolver.set_niche(niche.name)
 		merged_config = default_config.copy()
 		merged_config.update(niche.config)
 

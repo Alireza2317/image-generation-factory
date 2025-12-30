@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import Any
 from pydantic import BaseModel
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from enum import StrEnum
@@ -74,6 +75,17 @@ class Settings(BaseSettings):
 		env_nested_delimiter="__",
 		extra="ignore",
 	)
+
+	def model_post_init(self, __context: Any) -> None:
+		"""Ensuring all paths exist"""
+
+		# all paths to check
+		paths: list[Path] = [
+			item for item in self.model_dump().values() if isinstance(item, Path)
+		]
+
+		for path in paths:
+			path.mkdir(parents=True, exist_ok=True)
 
 
 # Singleton Instance

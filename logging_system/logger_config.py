@@ -1,3 +1,4 @@
+from __future__ import annotations
 import sys
 import loguru
 from settings import settings

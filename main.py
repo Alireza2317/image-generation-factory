@@ -1,3 +1,4 @@
+import copy
 from datetime import datetime
 from settings import settings, ArtistType, BrainType, PipelineType
 
@@ -95,7 +96,7 @@ def run_wildcard_pipeline(
 	for niche in niche_manager.niches():
 		app_logger.info(f"Processing niche: {niche.name}")
 		wildcard_resolver.set_niche(niche.name)
-		merged_config = default_config.copy()
+		merged_config = copy.deepcopy(default_config)
 		merged_config.update(niche.config)
 
 		for i, raw_prompt in enumerate(niche.prompts, 1):

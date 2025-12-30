@@ -119,7 +119,7 @@ class FooocusArtist(Artist):
 
 			# move and rename images to the desired location and name
 			# use default dir
-			output_dir: Path = paint_cfg["output_folder"]
+			output_dir: Path = Path(paint_cfg["output_folder"])
 			move_rename_images(real_images_paths, image_name_stem, output_dir)
 
 			return True

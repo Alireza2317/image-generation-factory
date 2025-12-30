@@ -44,7 +44,7 @@ class BananaArtist(Artist):
 		for part in image_response.parts:
 			image = part.as_image()
 			if image is not None:
-				output_dir: Path = paint_cfg["output_folder"]
+				output_dir: Path = Path(paint_cfg["output_folder"])
 				output_dir.mkdir(parents=True, exist_ok=True)
 				img_ext = paint_cfg["image_extension"]
 				output_image_path: Path = output_dir / f"{image_name_stem}.{img_ext}"

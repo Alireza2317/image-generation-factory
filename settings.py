@@ -49,7 +49,7 @@ class FooocusConfig(BaseModel):
 
 class Settings(BaseSettings):
 	active_brain: BrainType = BrainType.GEMINI
-	active_artist: ArtistType = ArtistType.FOOOCUS
+	active_artist: ArtistType = ArtistType.BANANA
 	active_pipeline: PipelineType = PipelineType.WILDCARD
 
 	csv_path: Path = Path("./metadata.csv")
@@ -59,6 +59,7 @@ class Settings(BaseSettings):
 	wildcard_prompts_path: Path = Path("./prompts/wildcard_prompts")
 	niche_configs_path: Path = Path("./prompts/niche_configs")
 	instruction_path: Path = Path("./prompts/instructions")
+	log_path: Path = Path("./logs")
 
 	gemini: GeminiConfig = GeminiConfig()
 	ollama: OllamaConfig = OllamaConfig()

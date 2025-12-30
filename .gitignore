@@ -1,5 +1,5 @@
 images*/
-log*/
+log/
 *.csv
 prompts/meta_prompts/
 prompts/wildcards/

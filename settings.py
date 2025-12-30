@@ -52,14 +52,15 @@ class Settings(BaseSettings):
 	active_artist: ArtistType = ArtistType.BANANA
 	active_pipeline: PipelineType = PipelineType.WILDCARD
 
-	csv_path: Path = Path("./metadata.csv")
 	metadata_image_extension: str = "jpg"
+
+	csv_path: Path = Path("./metadata")
 	meta_prompts_path: Path = Path("./prompts/meta_prompts")
 	wildcards_path: Path = Path("./prompts/wildcards")
 	wildcard_prompts_path: Path = Path("./prompts/wildcard_prompts")
 	niche_configs_path: Path = Path("./prompts/niche_configs")
 	instruction_path: Path = Path("./prompts/instructions")
-	log_path: Path = Path("./logs")
+	log_path: Path = Path("./log")
 
 	gemini: GeminiConfig = GeminiConfig()
 	ollama: OllamaConfig = OllamaConfig()

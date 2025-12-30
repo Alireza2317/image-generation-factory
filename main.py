@@ -19,6 +19,8 @@ from prompts.wildcard_manager import WildcardResolver
 from prompts.instruction_manager import InstructionManager
 from prompts.config_manager import ConfigManager
 from prompts.prompt_manager import MetaPromptManager, NicheManager
+from logging_system.logger_config import app_logger
+from logging_system.prompt_logger import PromptLogManager
 
 
 def formatted_datetime() -> str:
@@ -32,7 +34,7 @@ def get_workers() -> tuple[Brain, Artist]:
 	elif settings.active_brain == BrainType.GEMINI:
 		brain = GeminiBrain(config=settings.gemini.model_dump())
 	else:
-		print(f"Unknown brain {settings.active_brain}!")
+		app_logger.error(f"Unknown brain {settings.active_brain}!")
 		exit(1)
 
 	artist: Artist
@@ -41,7 +43,7 @@ def get_workers() -> tuple[Brain, Artist]:
 	elif settings.active_artist == ArtistType.FOOOCUS:
 		artist = FooocusArtist(config=settings.fooocus.model_dump())
 	else:
-		print(f"Unknown artist {settings.active_artist}!")
+		app_logger.error(f"Unknown artist {settings.active_artist}!")
 		exit(1)
 
 	return brain, artist
@@ -72,6 +74,7 @@ def run_wildcard_pipeline(
 	brain: Brain,
 	artist: Artist,
 	csv_manager: AdobeCsvManager,
+	prompt_log_manager: PromptLogManager,
 	n_image_per_niche: int = 1,
 ) -> None:
 	wildcard_resolver = WildcardResolver(settings.wildcards_path)
@@ -86,10 +89,11 @@ def run_wildcard_pipeline(
 		csv_manager,
 		wildcard_resolver,
 		instruction_manager,
+		prompt_log_manager,
 	)
 
 	for niche in niche_manager.niches():
-		print(f"Processing niche: {niche.name}")
+		app_logger.info(f"Processing niche: {niche.name}")
 		wildcard_resolver.set_niche(niche.name)
 		merged_config = default_config.copy()
 		merged_config.update(niche.config)
@@ -101,7 +105,7 @@ def run_wildcard_pipeline(
 					raw_prompt=raw_prompt,
 					image_name_stem=image_name,
 					paint_config=merged_config,
-					llm_instruction="sdxl_instruction"
+					llm_instruction="sdxl_instruction",
 				)
 				pipeline.run_job(job_config)
 
@@ -110,27 +114,31 @@ def run_pipeline(
 	brain: Brain,
 	artist: Artist,
 	csv_manager: AdobeCsvManager,
+	prompt_log_manager: PromptLogManager,
 	n_image_per_niche: int = 1,
 ) -> None:
 	if settings.active_pipeline == PipelineType.META:
 		run_meta_pipeline(brain, artist, csv_manager, n_image_per_niche)
 	elif settings.active_pipeline == PipelineType.WILDCARD:
-		run_wildcard_pipeline(brain, artist, csv_manager, n_image_per_niche)
+		run_wildcard_pipeline(
+			brain, artist, csv_manager, prompt_log_manager, n_image_per_niche
+		)
 	else:
-		print(f"Unknown pipeline {settings.active_pipeline}!")
+		app_logger.error(f"Unknown pipeline {settings.active_pipeline}!")
 		exit(1)
 
 
 def main() -> None:
-	N_image_per_niche: int = 3
+	N_image_per_niche: int = 2
 	brain, artist = get_workers()
-	csv_manager = AdobeCsvManager(filepath=settings.csv_path)
+	csv_manager = AdobeCsvManager(filepath=settings.csv_path / "metadata.csv")
+	prompt_log_manager = PromptLogManager(filepath=settings.log_path / "log.csv")
 
 	need_fooocus: bool = settings.active_artist == ArtistType.FOOOCUS
 	need_ollama: bool = settings.active_brain == BrainType.OLLAMA
 
 	with ServerRunner(run_ollama=need_ollama, run_fooocus=need_fooocus):
-		run_pipeline(brain, artist, csv_manager, N_image_per_niche)
+		run_pipeline(brain, artist, csv_manager, prompt_log_manager, N_image_per_niche)
 
 
 if __name__ == "__main__":

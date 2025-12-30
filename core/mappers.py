@@ -29,12 +29,13 @@ class IdeaMapper:
 		if not prompt:
 			raise ValueError('Invalid data: missing "title" field.')
 
-		raw_keywords: str | list[str] = raw_data.get("keywords", "").strip().strip('"')
+		raw_keywords: str | list[str] = raw_data.get("keywords", "")
 		if isinstance(raw_keywords, list):
 			# convert to comma-seperated str
 			keywords: str = ",".join(raw_keywords)
 		else:
-			keywords = raw_keywords.strip()
+			keywords = raw_keywords.strip().strip('"')
+
 
 		# handling category, should be int
 

@@ -13,15 +13,15 @@ from core.mappers import IdeaMapper
 
 class GeminiBrain(Brain):
 	def __init__(self, config: dict[str, Any]) -> None:
-		self.model = config['model']
+		self.model = config["model"]
 		self.client = genai.Client()
 
-	def get_response(self, meta_prompt: str) -> ImageIdea | None:
+	def get_response(self, prompt: str) -> ImageIdea | None:
 		try:
 			response: GenerateContentResponse | None = (
 				self.client.models.generate_content(
 					model=self.model,
-					contents=meta_prompt,
+					contents=prompt,
 					config=GenerateContentConfig(
 						thinking_config=ThinkingConfig(thinking_budget=0)
 					),
@@ -35,17 +35,11 @@ class GeminiBrain(Brain):
 			print("Gemini Error: No response!")
 			return None
 
-		if response.parts is None:
-			print("Gemini Error: No proper response!")
-			return None
-
-		for part in response.parts:
-			if part.text is None:
-				continue
-
-			json_str: str = part.text
-			break
-		else:
+		try:
+			json_str = response.text
+			if not isinstance(json_str, str):
+				raise ValueError
+		except ValueError:
 			print("Gemini Error: No proper response!")
 			return None
 

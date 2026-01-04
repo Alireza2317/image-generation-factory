@@ -8,3 +8,4 @@ prompts/niche_configs/
 **/__pycache__/
 .env
 .vscode/
+GEMINI.md

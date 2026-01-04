@@ -28,6 +28,8 @@ class AdobeCsvManager:
 		Appends a single record to the csv metadata file.
 		"""
 
+		# TODO: limit keywords to 49 maximum, also remove unnecessary spaces
+
 		with open(self.filepath, mode="a", newline="", encoding="utf-8") as file:
 			writer = csv.writer(file, delimiter=",")
 			writer.writerow(

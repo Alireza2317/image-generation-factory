@@ -99,9 +99,9 @@ def run_wildcard_pipeline(
 		merged_config = copy.deepcopy(default_config)
 		merged_config.update(niche.config)
 
-		for i, raw_prompt in enumerate(niche.prompts, 1):
-			for j in range(1, n_image_per_niche + 1):
-				image_name: str = f"{niche.name}_{i}_{j}_{formatted_datetime()}"
+		for prompt_name, raw_prompt in niche.prompts:
+			for i in range(1, n_image_per_niche + 1):
+				image_name: str = f"{niche.name}_{prompt_name}_{i}_{formatted_datetime()}"
 				job_config = WildcardConfig(
 					raw_prompt=raw_prompt,
 					image_name_stem=image_name,

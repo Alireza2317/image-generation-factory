@@ -55,7 +55,9 @@ class WildcardPromptManager:
 class Niche(BaseModel):
 	name: str
 	config: dict[str, Any] = Field(default_factory=dict)
-	prompts: list[str] = Field(default_factory=list)
+
+	# Each item is a tuple: (prompt_name, prompt_body)
+	prompts: list[tuple[str, str]] = Field(default_factory=list)
 
 
 class NicheManager:
@@ -71,10 +73,13 @@ class NicheManager:
 			niche_name = niche_dir.name
 			niche_config = self.config_manager.get_config(niche_name)
 
-			prompts: list[str] = []
+			prompts: list[tuple[str, str]] = []
 			for prompt_file in niche_dir.glob("*.txt"):
 				with open(prompt_file, mode="r", encoding="utf-8") as file:
-					prompts.append(file.read())
+					prompt_name: str = prompt_file.stem
+					prompts.append(
+						(prompt_name, file.read())
+					)
 
 			if not prompts:
 				print(f"Warning: Niche '{niche_name}' has no prompts, skipping.")

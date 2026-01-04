@@ -66,7 +66,7 @@ class NicheManager:
 		self.config_manager = config_manager
 
 	def niches(self) -> Generator[Niche, None, None]:
-		for niche_dir in self.path.iterdir():
+		for niche_dir in sorted(self.path.iterdir()):
 			if not niche_dir.is_dir():
 				continue
 
@@ -74,7 +74,7 @@ class NicheManager:
 			niche_config = self.config_manager.get_config(niche_name)
 
 			prompts: list[tuple[str, str]] = []
-			for prompt_file in niche_dir.glob("*.txt"):
+			for prompt_file in sorted(niche_dir.glob("*.txt")):
 				with open(prompt_file, mode="r", encoding="utf-8") as file:
 					prompt_name: str = prompt_file.stem
 					prompts.append(

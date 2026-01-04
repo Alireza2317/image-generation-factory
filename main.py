@@ -130,7 +130,7 @@ def run_pipeline(
 
 
 def main() -> None:
-	N_image_per_niche: int = 2
+	N_image_per_niche: int = 20
 	brain, artist = get_workers()
 	csv_manager = AdobeCsvManager(filepath=settings.csv_path / "metadata.csv")
 	prompt_log_manager = PromptLogManager(filepath=settings.log_path / "log.csv")

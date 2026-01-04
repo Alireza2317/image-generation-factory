@@ -21,6 +21,13 @@ class BananaArtist(Artist):
 			# generate the image
 			model: str = self.config["model"]
 			ar: str = paint_cfg["aspect_ratio"]
+
+			negative_prompt = paint_cfg.get("negative_prompt", "")
+			if negative_prompt:
+				prompt = f"{prompt}\n\nNegative prompt: {negative_prompt}."
+			else:
+				prompt = prompt
+
 			image_response: GenerateContentResponse = (
 				self.client.models.generate_content(
 					model=model,

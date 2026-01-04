@@ -47,7 +47,11 @@ class GeminiBrain(Brain):
 		# with ```json, we should clean it up first
 		clean_json_s: str = json_str.removeprefix("```json").removesuffix("```")
 
-		content: dict[str, Any] = json.loads(clean_json_s)
+		try:
+			content: dict[str, Any] = json.loads(clean_json_s)
+		except json.JSONDecodeError as e:
+			print(f"Gemini Error: json error: {e}")
+			return None
 
 		if self.validate_json(content):
 			try:

@@ -31,6 +31,7 @@ class WildcardResolver:
 			)
 		self.path = wildcards_path
 		self._wildcards: dict[str, list[str]] = {}
+		self._ordered_indices: dict[str, int] = {}
 		self._common_wildcards = self._load_wildcards_from_path(self.path)
 		self.set_niche(None)
 
@@ -54,6 +55,7 @@ class WildcardResolver:
 			niche_name: The name of the niche, corresponding to a subdirectory.
 		"""
 		self._wildcards = self._common_wildcards.copy()
+		self.reset_order()
 		if niche_name:
 			niche_path = self.path / niche_name
 			if niche_path.is_dir():
@@ -62,13 +64,15 @@ class WildcardResolver:
 			else:
 				print(f"Warning: Niche directory not found: {niche_path}")
 
+	def reset_order(self) -> None:
+		"""Resets the indices for ordered wildcard resolution."""
+		self._ordered_indices = {}
+
 	def _get_wildcard_files(self, path: Path) -> list[Path]:
 		"""Gets all .txt files directly under the given path."""
 		return [f for f in path.iterdir() if f.is_file() and f.suffix == ".txt"]
 
-	def _load_wildcards_from_path(
-		self, path: Path
-	) -> dict[str, list[str]]:
+	def _load_wildcards_from_path(self, path: Path) -> dict[str, list[str]]:
 		"""Loads all wildcards from .txt files in a given directory."""
 		wildcards: dict[str, list[str]] = {}
 		for filepath in self._get_wildcard_files(path):
@@ -83,28 +87,44 @@ class WildcardResolver:
 				print(f"Could not read or decode wildcard file {filepath}: {e}")
 		return wildcards
 
-	def _replacer(self, match: re.Match[str]) -> str:
+	def _random_replacer(self, match: re.Match[str]) -> str:
 		wildcard_name = match.group(1)
 		if wildcard_name in self._wildcards:
 			return random.choice(self._wildcards[wildcard_name])
 		return ""
 
-	def resolve(self, raw_prompt: str) -> str:
+	def _ordered_replacer(self, match: re.Match[str]) -> str:
+		wildcard_name = match.group(1)
+		if wildcard_name in self._wildcards:
+			if wildcard_name not in self._ordered_indices:
+				self._ordered_indices[wildcard_name] = 0
+
+			values = self._wildcards[wildcard_name]
+			index = self._ordered_indices[wildcard_name]
+			value = values[index]
+
+			self._ordered_indices[wildcard_name] = (index + 1) % len(values)
+			return value
+		return ""
+
+	def resolve(self, raw_prompt: str, ordered: bool = False) -> str:
 		"""
 		Resolves wildcards in the given raw prompt by replacing
 		wildcard placeholders with random choices from corresponding files.
 
 		Args:
 			raw_prompt: The prompt containing wildcard placeholders.
+			ordered: If True, resolves wildcards sequentially.
 		"""
 		resolved_prompt: str = raw_prompt
+		replacer = self._ordered_replacer if ordered else self._random_replacer
 
 		for _ in range(20):  # recursion limit
 			if "__" not in resolved_prompt:
 				break
 
 			previous_prompt = resolved_prompt
-			resolved_prompt = re.sub(r"__(.*?)__", self._replacer, resolved_prompt)
+			resolved_prompt = re.sub(r"__(.*?)__", replacer, resolved_prompt)
 
 			# This prevents infinite loops for non-existent wildcards.
 			if previous_prompt == resolved_prompt:
